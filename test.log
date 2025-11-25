@@ -1,0 +1,96 @@
+=== ТЕСТИРОВАНИЕ ИНЦИДЕНТОВ ===
+
+Создание инцидента:
+Status: 201
+Response: {
+  "description": "Он не в сети",
+  "source": "operator",
+  "id": 2,
+  "status": "new",
+  "created_at": "2025-11-25T11:28:54"
+}
+--------------------------------------------------
+Получение инцидентов (статус: None):
+Status: 200
+Response: [
+  {
+    "description": "Я не в сети",
+    "source": "operator",
+    "id": 1,
+    "status": "new",
+    "created_at": "2025-11-25T11:26:41"
+  },
+  {
+    "description": "Он не в сети",
+    "source": "operator",
+    "id": 2,
+    "status": "new",
+    "created_at": "2025-11-25T11:28:54"
+  },
+  {
+    "description": "Точка не отвечает на запросы",
+    "source": "monitoring",
+    "id": 3,
+    "status": "new",
+    "created_at": "2025-11-25T11:28:54"
+  }
+]
+--------------------------------------------------
+Получение инцидентов (статус: new):
+Status: 200
+Response: [
+  {
+    "description": "Я не в сети",
+    "source": "operator",
+    "id": 1,
+    "status": "new",
+    "created_at": "2025-11-25T11:26:41"
+  },
+  {
+    "description": "Он не в сети",
+    "source": "operator",
+    "id": 2,
+    "status": "new",
+    "created_at": "2025-11-25T11:28:54"
+  },
+  {
+    "description": "Точка не отвечает на запросы",
+    "source": "monitoring",
+    "id": 3,
+    "status": "new",
+    "created_at": "2025-11-25T11:28:54"
+  }
+]
+--------------------------------------------------
+Обновление инцидента 2:
+Status: 200
+Response: {
+  "description": "Он не в сети",
+  "source": "operator",
+  "id": 2,
+  "status": "in_progress",
+  "created_at": "2025-11-25T11:28:54"
+}
+--------------------------------------------------
+Получение инцидента 2:
+Status: 405
+Error: {"detail":"Method Not Allowed"}
+--------------------------------------------------
+Обновление инцидента 999:
+Status: 404
+Error: {"detail":"Инцидент не найден"}
+--------------------------------------------------
+Получение инцидентов (статус: in_progress):
+Status: 200
+Response: [
+  {
+    "description": "Он не в сети",
+    "source": "operator",
+    "id": 2,
+    "status": "in_progress",
+    "created_at": "2025-11-25T11:28:54"
+  }
+]
+--------------------------------------------------
+
+Process finished with exit code 0
