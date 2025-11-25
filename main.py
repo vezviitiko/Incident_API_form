@@ -103,6 +103,27 @@ def update_incident_status(incident_id: int, incident_update: IncidentUpdate, db
     db.refresh(db_incident)
     return db_incident
 
+@app.delete("/incidents/")
+def delete_all_incidents(db: Session = Depends(get_db)):
+    # Удалить все инциденты
+    try:
+        deleted_count = db.query(Incident).delete()
+        db.commit()
+        return {"message": "Все инциденты удалены", "deleted_count": deleted_count}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Ошибка при удалении: {str(e)}")
+
+@app.delete("/incidents/{incident_id}")
+def delete_incident(incident_id: int, db: Session = Depends(get_db)):
+    # Удалить конкретный инцидент по ID
+    db_incident = db.query(Incident).filter(Incident.id == incident_id).first()
+    if not db_incident:
+        raise HTTPException(status_code=404, detail="Инцидент не найден")
+
+    db.delete(db_incident)
+    db.commit()
+    return {"message": f"Инцидент {incident_id} удален"}
 @app.get("/")
 def root():
     return {"message": "Incident API Service"}
