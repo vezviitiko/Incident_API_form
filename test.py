@@ -5,9 +5,9 @@ BASE_URL = "http://127.0.0.1:8000"
 
 
 def test_create_incident():
-    # Тест создания инцидента
+    #Тест создания инцидента
     data = {
-        "description": "Самокат не в сети",
+        "description": "Он не в сети",
         "source": "operator"
     }
 
@@ -20,7 +20,7 @@ def test_create_incident():
 
 
 def test_get_incidents(status=None):
-    # Тест получения инцидентов
+    #Тест получения инцидентов
     url = f"{BASE_URL}/incidents/"
     if status:
         url += f"?status={status}"
@@ -33,7 +33,7 @@ def test_get_incidents(status=None):
 
 
 def test_update_incident(incident_id, new_status):
-    # Тест обновления статуса инцидента
+    #Тест обновления статуса инцидента
     data = {
         "status": new_status
     }
@@ -49,7 +49,7 @@ def test_update_incident(incident_id, new_status):
 
 
 def test_get_single_incident(incident_id):
-    # Тест получения одного инцидента
+    #Тест получения 1 инцидента
     response = requests.get(f"{BASE_URL}/incidents/{incident_id}")
     print(f"Получение инцидента {incident_id}:")
     print(f"Status: {response.status_code}")
@@ -63,8 +63,10 @@ def test_get_single_incident(incident_id):
 if __name__ == "__main__":
     print("=== ТЕСТИРОВАНИЕ ИНЦИДЕНТОВ ===\n")
 
+    # Создаем несколько инцидентов
     incident1_id = test_create_incident()
 
+    # Создаем еще один
     data = {
         "description": "Точка не отвечает на запросы",
         "source": "monitoring"
@@ -88,3 +90,11 @@ if __name__ == "__main__":
 
     # Получаем инциденты в работе
     test_get_incidents("in_progress")
+
+    # Удалить все
+    response = requests.delete("http://127.0.0.1:8000/incidents/")
+    print(response.json())
+
+    # Проверить что очищено
+    response = requests.get("http://127.0.0.1:8000/incidents/")
+    print(f"Осталось инцидентов: {len(response.json())}")
