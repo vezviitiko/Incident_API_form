@@ -1,4 +1,3 @@
-# Подключаемые библиотеки
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
@@ -52,7 +51,6 @@ class IncidentResponse(IncidentCreate):
     status: IncidentStatus
     created_at: datetime
 
-    # Pydantic auto
     class Config:
         from_attributes = True
 
@@ -76,11 +74,24 @@ def create_incident(incident: IncidentCreate, db: Session = Depends(get_db)):
     return db_incident
 
 @app.get("/incidents/", response_model=List[IncidentResponse])
-def read_incidents(status: Optional[IncidentStatus] = None, db: Session = Depends(get_db)):
+def read_incidents(
+    status: Optional[IncidentStatus] = None,
+    skip: int = 0,
+    limit: int = 100,
+    db: Session = Depends(get_db)
+):
     query = db.query(Incident)
     if status:
         query = query.filter(Incident.status == status)
-    return query.all()
+    return query.offset(skip).limit(limit).all()
+
+@app.get("/incidents/{incident_id}", response_model=IncidentResponse)
+def read_incident(incident_id: int, db: Session = Depends(get_db)):
+    # Получить инцидент по ID
+    db_incident = db.query(Incident).filter(Incident.id == incident_id).first()
+    if db_incident is None:
+        raise HTTPException(status_code=404, detail="Инцидент не найден")
+    return db_incident
 
 @app.patch("/incidents/{incident_id}", response_model=IncidentResponse)
 def update_incident_status(incident_id: int, incident_update: IncidentUpdate, db: Session = Depends(get_db)):
